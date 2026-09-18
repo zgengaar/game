@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -231,6 +232,7 @@
       }
     }
   </style>
+
 </head>
 
 <body>
@@ -255,6 +257,7 @@
 
   <div id="mobile-controls">
 
+    ```
     <button class="direction-button"
             id="up"
             type="button">
@@ -278,6 +281,7 @@
             type="button">
       ▶
     </button>
+    ```
 
   </div>
 
@@ -286,7 +290,6 @@
   </button>
 
 </div>
-
 
 <script>
 
@@ -380,38 +383,58 @@
       event.key === "ArrowUp" ||
       event.key.toLowerCase() === "w"
     ) {
+
       keys.up = true;
+
       event.preventDefault();
     }
+
 
     if (
       event.key === "ArrowDown" ||
       event.key.toLowerCase() === "s"
     ) {
+
       keys.down = true;
+
       event.preventDefault();
     }
+
 
     if (
       event.key === "ArrowLeft" ||
       event.key.toLowerCase() === "a"
     ) {
+
       keys.left = true;
+
       event.preventDefault();
     }
+
 
     if (
       event.key === "ArrowRight" ||
       event.key.toLowerCase() === "d"
     ) {
+
       keys.right = true;
+
       event.preventDefault();
     }
 
-    if (event.key.toLowerCase() === "e") {
+
+    /* =========================
+       TECLA E
+       ========================= */
+
+    if (
+      event.key.toLowerCase() === "e" &&
+      !event.repeat
+    ) {
 
       interact();
     }
+
   });
 
 
@@ -421,29 +444,37 @@
       event.key === "ArrowUp" ||
       event.key.toLowerCase() === "w"
     ) {
+
       keys.up = false;
     }
+
 
     if (
       event.key === "ArrowDown" ||
       event.key.toLowerCase() === "s"
     ) {
+
       keys.down = false;
     }
+
 
     if (
       event.key === "ArrowLeft" ||
       event.key.toLowerCase() === "a"
     ) {
+
       keys.left = false;
     }
+
 
     if (
       event.key === "ArrowRight" ||
       event.key.toLowerCase() === "d"
     ) {
+
       keys.right = false;
     }
+
   });
 
 
@@ -453,31 +484,48 @@
 
   function setupTouchButton(id, direction) {
 
-    const button = document.getElementById(id);
+    const button =
+      document.getElementById(id);
 
-    button.addEventListener("pointerdown", function(event) {
 
-      event.preventDefault();
+    button.addEventListener(
+      "pointerdown",
+      function(event) {
 
-      keys[direction] = true;
-    });
+        event.preventDefault();
 
-    button.addEventListener("pointerup", function(event) {
+        keys[direction] = true;
+      }
+    );
 
-      event.preventDefault();
 
-      keys[direction] = false;
-    });
+    button.addEventListener(
+      "pointerup",
+      function(event) {
 
-    button.addEventListener("pointercancel", function() {
+        event.preventDefault();
 
-      keys[direction] = false;
-    });
+        keys[direction] = false;
+      }
+    );
 
-    button.addEventListener("pointerleave", function() {
 
-      keys[direction] = false;
-    });
+    button.addEventListener(
+      "pointercancel",
+      function() {
+
+        keys[direction] = false;
+      }
+    );
+
+
+    button.addEventListener(
+      "pointerleave",
+      function() {
+
+        keys[direction] = false;
+      }
+    );
   }
 
 
@@ -489,7 +537,10 @@
 
   document
     .getElementById("action-button")
-    .addEventListener("click", interact);
+    .addEventListener(
+      "click",
+      interact
+    );
 
 
   /* =========================================================
@@ -499,7 +550,12 @@
   const obstacles = [];
 
 
-  function addObstacle(x, y, width, height) {
+  function addObstacle(
+    x,
+    y,
+    width,
+    height
+  ) {
 
     obstacles.push({
       x,
@@ -561,6 +617,7 @@
     {
       x: 850,
       y: 820,
+
       width: 90,
       height: 80,
 
@@ -568,9 +625,11 @@
         "🌸 Este podría ser uno de los primeros recuerdos de nuestra historia."
     },
 
+
     {
       x: 1500,
       y: 720,
+
       width: 90,
       height: 90,
 
@@ -578,15 +637,18 @@
         "💗 Aquí podremos colocar una foto o un recuerdo importante."
     },
 
+
     {
       x: 2100,
       y: 500,
+
       width: 100,
       height: 100,
 
       text:
         "✨ Esta zona será importante más adelante..."
     }
+
   ];
 
 
@@ -602,6 +664,7 @@
       a.x + a.width > b.x &&
       a.y < b.y + b.height &&
       a.y + a.height > b.y
+
     );
   }
 
@@ -615,6 +678,7 @@
 
       width: player.width,
       height: player.height
+
     };
 
 
@@ -624,14 +688,29 @@
 
     if (y < 0) return false;
 
-    if (x + player.width > WORLD_WIDTH) return false;
+    if (
+      x + player.width >
+      WORLD_WIDTH
+    ) {
 
-    if (y + player.height > WORLD_HEIGHT) return false;
+      return false;
+    }
+
+
+    if (
+      y + player.height >
+      WORLD_HEIGHT
+    ) {
+
+      return false;
+    }
 
 
     /* Obstáculos */
 
-    for (const obstacle of obstacles) {
+    for (
+      const obstacle of obstacles
+      ) {
 
       if (
         rectanglesCollide(
@@ -642,6 +721,7 @@
 
         return false;
       }
+
     }
 
 
@@ -659,16 +739,33 @@
     let dy = 0;
 
 
-    if (keys.up) dy -= 1;
+    if (keys.up) {
 
-    if (keys.down) dy += 1;
-
-    if (keys.left) dx -= 1;
-
-    if (keys.right) dx += 1;
+      dy -= 1;
+    }
 
 
-    player.moving = dx !== 0 || dy !== 0;
+    if (keys.down) {
+
+      dy += 1;
+    }
+
+
+    if (keys.left) {
+
+      dx -= 1;
+    }
+
+
+    if (keys.right) {
+
+      dx += 1;
+    }
+
+
+    player.moving =
+      dx !== 0 ||
+      dy !== 0;
 
 
     if (!player.moving) {
@@ -679,7 +776,10 @@
 
     /* Movimiento diagonal */
 
-    if (dx !== 0 && dy !== 0) {
+    if (
+      dx !== 0 &&
+      dy !== 0
+    ) {
 
       dx *= 0.707;
       dy *= 0.707;
@@ -707,19 +807,34 @@
 
 
     const newX =
-      player.x + dx * player.speed;
+      player.x +
+      dx *
+      player.speed;
+
 
     const newY =
-      player.y + dy * player.speed;
+      player.y +
+      dy *
+      player.speed;
 
 
-    if (canMoveTo(newX, player.y)) {
+    if (
+      canMoveTo(
+        newX,
+        player.y
+      )
+    ) {
 
       player.x = newX;
     }
 
 
-    if (canMoveTo(player.x, newY)) {
+    if (
+      canMoveTo(
+        player.x,
+        newY
+      )
+    ) {
 
       player.y = newY;
     }
@@ -729,7 +844,10 @@
 
     player.animationTimer++;
 
-    if (player.animationTimer > 8) {
+
+    if (
+      player.animationTimer > 8
+    ) {
 
       player.animationTimer = 0;
 
@@ -738,6 +856,7 @@
           ? 1
           : 0;
     }
+
   }
 
 
@@ -764,7 +883,8 @@
         0,
         Math.min(
           camera.x,
-          WORLD_WIDTH - screenWidth
+          WORLD_WIDTH -
+          screenWidth
         )
       );
 
@@ -774,9 +894,11 @@
         0,
         Math.min(
           camera.y,
-          WORLD_HEIGHT - screenHeight
+          WORLD_HEIGHT -
+          screenHeight
         )
       );
+
   }
 
 
@@ -786,7 +908,9 @@
 
   function drawBackground() {
 
-    ctx.fillStyle = "#82b8d8";
+    ctx.fillStyle =
+      "#82b8d8";
+
 
     ctx.fillRect(
       0,
@@ -803,7 +927,9 @@
 
   function drawGround() {
 
-    ctx.fillStyle = "#6f944b";
+    ctx.fillStyle =
+      "#6f944b";
+
 
     ctx.fillRect(
       -camera.x,
@@ -815,7 +941,8 @@
 
     /* Pequeños patrones del suelo */
 
-    ctx.fillStyle = "#789f53";
+    ctx.fillStyle =
+      "#789f53";
 
 
     for (
@@ -836,8 +963,10 @@
           5,
           5
         );
+
       }
     }
+
   }
 
 
@@ -847,13 +976,14 @@
 
   function drawPaths() {
 
-    ctx.fillStyle = "#c9a66a";
+    ctx.fillStyle =
+      "#c9a66a";
 
 
     /* Camino principal */
 
     ctx.fillRect(
-      0 - camera.x,
+      -camera.x,
       960 - camera.y,
       WORLD_WIDTH,
       150
@@ -882,7 +1012,8 @@
 
     /* Bordes */
 
-    ctx.fillStyle = "#b9945b";
+    ctx.fillStyle =
+      "#b9945b";
 
 
     for (
@@ -897,7 +1028,9 @@
         25,
         5
       );
+
     }
+
   }
 
 
@@ -907,7 +1040,9 @@
 
   function drawLake() {
 
-    ctx.fillStyle = "#5fa8c4";
+    ctx.fillStyle =
+      "#5fa8c4";
+
 
     ctx.fillRect(
       1750 - camera.x,
@@ -917,7 +1052,8 @@
     );
 
 
-    ctx.fillStyle = "#79bed3";
+    ctx.fillStyle =
+      "#79bed3";
 
 
     for (
@@ -938,8 +1074,10 @@
           35,
           5
         );
+
       }
     }
+
   }
 
 
@@ -951,7 +1089,9 @@
 
     /* Tronco */
 
-    ctx.fillStyle = "#75472b";
+    ctx.fillStyle =
+      "#75472b";
+
 
     ctx.fillRect(
       x - camera.x + 28,
@@ -963,7 +1103,9 @@
 
     /* Copa */
 
-    ctx.fillStyle = "#315f3d";
+    ctx.fillStyle =
+      "#315f3d";
+
 
     ctx.fillRect(
       x - camera.x,
@@ -973,7 +1115,9 @@
     );
 
 
-    ctx.fillStyle = "#3f7747";
+    ctx.fillStyle =
+      "#3f7747";
+
 
     ctx.fillRect(
       x - camera.x + 15,
@@ -985,7 +1129,9 @@
 
     /* Hojas claras */
 
-    ctx.fillStyle = "#55894e";
+    ctx.fillStyle =
+      "#55894e";
+
 
     ctx.fillRect(
       x - camera.x + 30,
@@ -993,6 +1139,7 @@
       35,
       30
     );
+
   }
 
 
@@ -1012,16 +1159,21 @@
 
       [1300, 1300],
       [1550, 1150]
+
     ];
 
 
-    for (const tree of trees) {
+    for (
+      const tree of trees
+      ) {
 
       drawTree(
         tree[0],
         tree[1]
       );
+
     }
+
   }
 
 
@@ -1031,13 +1183,18 @@
 
   function drawHouse() {
 
-    const x = 1550 - camera.x;
-    const y = 310 - camera.y;
+    const x =
+      1550 - camera.x;
+
+    const y =
+      310 - camera.y;
 
 
     /* Pared */
 
-    ctx.fillStyle = "#d9b58d";
+    ctx.fillStyle =
+      "#d9b58d";
+
 
     ctx.fillRect(
       x,
@@ -1049,21 +1206,30 @@
 
     /* Techo */
 
-    ctx.fillStyle = "#8d5261";
+    ctx.fillStyle =
+      "#8d5261";
+
 
     ctx.beginPath();
 
-    ctx.moveTo(x - 30, y + 75);
+
+    ctx.moveTo(
+      x - 30,
+      y + 75
+    );
+
 
     ctx.lineTo(
       x + 190,
       y - 80
     );
 
+
     ctx.lineTo(
       x + 410,
       y + 75
     );
+
 
     ctx.closePath();
 
@@ -1072,7 +1238,9 @@
 
     /* Puerta */
 
-    ctx.fillStyle = "#70452f";
+    ctx.fillStyle =
+      "#70452f";
+
 
     ctx.fillRect(
       x + 165,
@@ -1084,7 +1252,9 @@
 
     /* Ventanas */
 
-    ctx.fillStyle = "#8ec5df";
+    ctx.fillStyle =
+      "#8ec5df";
+
 
     ctx.fillRect(
       x + 55,
@@ -1092,6 +1262,7 @@
       70,
       60
     );
+
 
     ctx.fillRect(
       x + 255,
@@ -1103,7 +1274,9 @@
 
     /* Cartel */
 
-    ctx.fillStyle = "#563923";
+    ctx.fillStyle =
+      "#563923";
+
 
     ctx.fillRect(
       x + 135,
@@ -1113,17 +1286,24 @@
     );
 
 
-    ctx.fillStyle = "#fff5df";
+    ctx.fillStyle =
+      "#fff5df";
 
-    ctx.font = "12px monospace";
 
-    ctx.textAlign = "center";
+    ctx.font =
+      "12px monospace";
+
+
+    ctx.textAlign =
+      "center";
+
 
     ctx.fillText(
       "RECUERDOS",
       x + 190,
       y - 97
     );
+
   }
 
 
@@ -1137,7 +1317,9 @@
     y -= camera.y;
 
 
-    ctx.fillStyle = "#3d7545";
+    ctx.fillStyle =
+      "#3d7545";
+
 
     ctx.fillRect(
       x + 8,
@@ -1147,7 +1329,9 @@
     );
 
 
-    ctx.fillStyle = "#ff9fc8";
+    ctx.fillStyle =
+      "#ff9fc8";
+
 
     ctx.fillRect(
       x,
@@ -1156,6 +1340,7 @@
       10
     );
 
+
     ctx.fillRect(
       x + 16,
       y,
@@ -1163,12 +1348,14 @@
       10
     );
 
+
     ctx.fillRect(
       x + 8,
       y - 8,
       10,
       10
     );
+
 
     ctx.fillRect(
       x + 8,
@@ -1178,7 +1365,9 @@
     );
 
 
-    ctx.fillStyle = "#ffd95c";
+    ctx.fillStyle =
+      "#ffd95c";
+
 
     ctx.fillRect(
       x + 8,
@@ -1186,6 +1375,7 @@
       10,
       10
     );
+
   }
 
 
@@ -1208,16 +1398,21 @@
 
       [900, 1150],
       [950, 1180]
+
     ];
 
 
-    for (const flower of flowers) {
+    for (
+      const flower of flowers
+      ) {
 
       drawFlower(
         flower[0],
         flower[1]
       );
+
     }
+
   }
 
 
@@ -1240,7 +1435,9 @@
 
       /* Cofre / recuerdo */
 
-      ctx.fillStyle = "#8d5b36";
+      ctx.fillStyle =
+        "#8d5b36";
+
 
       ctx.fillRect(
         x,
@@ -1250,7 +1447,9 @@
       );
 
 
-      ctx.fillStyle = "#d7a55e";
+      ctx.fillStyle =
+        "#d7a55e";
+
 
       ctx.fillRect(
         x + 10,
@@ -1262,18 +1461,49 @@
 
       /* Corazón */
 
-      ctx.fillStyle = "#f3a6c8";
+      ctx.fillStyle =
+        "#f3a6c8";
 
-      ctx.font = "24px monospace";
 
-      ctx.textAlign = "center";
+      ctx.font =
+        "24px monospace";
+
+
+      ctx.textAlign =
+        "center";
+
 
       ctx.fillText(
         "♥",
         x + object.width / 2,
         y + object.height / 2 + 8
       );
+
+
+      /* Indicador del objeto cercano */
+
+      if (
+        nearbyObject === object
+      ) {
+
+        ctx.fillStyle =
+          "#fff5fb";
+
+
+        ctx.font =
+          "bold 16px monospace";
+
+
+        ctx.fillText(
+          "!",
+          x + object.width / 2,
+          y - 12
+        );
+
+      }
+
     }
+
   }
 
 
@@ -1294,7 +1524,9 @@
      * Sombra
      */
 
-    ctx.fillStyle = "rgba(0,0,0,0.25)";
+    ctx.fillStyle =
+      "rgba(0,0,0,0.25)";
+
 
     ctx.fillRect(
       x + 5,
@@ -1308,7 +1540,9 @@
      * Pelo
      */
 
-    ctx.fillStyle = "#4a2945";
+    ctx.fillStyle =
+      "#4a2945";
+
 
     ctx.fillRect(
       x + 7,
@@ -1322,7 +1556,9 @@
      * Cara
      */
 
-    ctx.fillStyle = "#ffd1bd";
+    ctx.fillStyle =
+      "#ffd1bd";
+
 
     ctx.fillRect(
       x + 10,
@@ -1336,7 +1572,9 @@
      * Pelo lateral
      */
 
-    ctx.fillStyle = "#4a2945";
+    ctx.fillStyle =
+      "#4a2945";
+
 
     ctx.fillRect(
       x + 5,
@@ -1344,6 +1582,7 @@
       6,
       25
     );
+
 
     ctx.fillRect(
       x + 27,
@@ -1357,7 +1596,9 @@
      * Cuerpo
      */
 
-    ctx.fillStyle = "#d982ae";
+    ctx.fillStyle =
+      "#d982ae";
+
 
     ctx.fillRect(
       x + 7,
@@ -1371,7 +1612,8 @@
      * Piernas
      */
 
-    ctx.fillStyle = "#4c426d";
+    ctx.fillStyle =
+      "#4c426d";
 
 
     if (
@@ -1385,6 +1627,7 @@
         8,
         7
       );
+
 
       ctx.fillRect(
         x + 22,
@@ -1402,13 +1645,16 @@
         7
       );
 
+
       ctx.fillRect(
         x + 21,
         y + 44,
         8,
         7
       );
+
     }
+
   }
 
 
@@ -1418,11 +1664,16 @@
 
   function drawStartSign() {
 
-    const x = 760 - camera.x;
-    const y = 850 - camera.y;
+    const x =
+      760 - camera.x;
+
+    const y =
+      850 - camera.y;
 
 
-    ctx.fillStyle = "#70472c";
+    ctx.fillStyle =
+      "#70472c";
+
 
     ctx.fillRect(
       x + 36,
@@ -1432,7 +1683,9 @@
     );
 
 
-    ctx.fillStyle = "#9a693e";
+    ctx.fillStyle =
+      "#9a693e";
+
 
     ctx.fillRect(
       x,
@@ -1442,9 +1695,13 @@
     );
 
 
-    ctx.strokeStyle = "#56351f";
+    ctx.strokeStyle =
+      "#56351f";
 
-    ctx.lineWidth = 3;
+
+    ctx.lineWidth =
+      3;
+
 
     ctx.strokeRect(
       x,
@@ -1454,11 +1711,17 @@
     );
 
 
-    ctx.fillStyle = "#fff5df";
+    ctx.fillStyle =
+      "#fff5df";
 
-    ctx.font = "10px monospace";
 
-    ctx.textAlign = "center";
+    ctx.font =
+      "10px monospace";
+
+
+    ctx.textAlign =
+      "center";
+
 
     ctx.fillText(
       "AQUÍ",
@@ -1466,11 +1729,13 @@
       y + 19
     );
 
+
     ctx.fillText(
       "COMENZÓ",
       x + 41,
       y + 33
     );
+
   }
 
 
@@ -1480,11 +1745,16 @@
 
   function drawPortal() {
 
-    const x = 2150 - camera.x;
-    const y = 430 - camera.y;
+    const x =
+      2150 - camera.x;
+
+    const y =
+      430 - camera.y;
 
 
-    ctx.fillStyle = "#33245b";
+    ctx.fillStyle =
+      "#33245b";
+
 
     ctx.fillRect(
       x,
@@ -1494,7 +1764,9 @@
     );
 
 
-    ctx.fillStyle = "#b79ae8";
+    ctx.fillStyle =
+      "#b79ae8";
+
 
     ctx.fillRect(
       x + 8,
@@ -1504,7 +1776,9 @@
     );
 
 
-    ctx.fillStyle = "#151122";
+    ctx.fillStyle =
+      "#151122";
+
 
     ctx.fillRect(
       x + 18,
@@ -1514,17 +1788,24 @@
     );
 
 
-    ctx.fillStyle = "#fff0ff";
+    ctx.fillStyle =
+      "#fff0ff";
 
-    ctx.font = "12px monospace";
 
-    ctx.textAlign = "center";
+    ctx.font =
+      "12px monospace";
+
+
+    ctx.textAlign =
+      "center";
+
 
     ctx.fillText(
       "NIVEL 2",
       x + 45,
       y + 145
     );
+
   }
 
 
@@ -1533,34 +1814,85 @@
      ========================================================= */
 
   const interactionBox =
-    document.getElementById("interaction");
+    document.getElementById(
+      "interaction"
+    );
+
 
   const interactionText =
-    document.getElementById("interaction-text");
+    document.getElementById(
+      "interaction-text"
+    );
 
 
   let nearbyObject = null;
 
+  let interactionShowingText =
+    false;
+
+
+  /*
+   * Distancia máxima para interactuar.
+   *
+   * 110 píxeles permite acercarse
+   * cómodamente al objeto.
+   */
+
+  const interactionDistance = 110;
+
+
+  /* =========================================================
+     BUSCAR OBJETO CERCANO
+     ========================================================= */
 
   function updateInteraction() {
 
-    nearbyObject = null;
+    let closestObject = null;
+
+    let closestDistance =
+      Infinity;
 
 
-    const interactionDistance = 90;
+    /*
+     * Centro del jugador
+     */
+
+    const playerCenterX =
+      player.x +
+      player.width / 2;
+
+
+    const playerCenterY =
+      player.y +
+      player.height / 2;
 
 
     for (
       const object of interactables
       ) {
 
+      /*
+       * Centro del objeto
+       */
+
+      const objectCenterX =
+        object.x +
+        object.width / 2;
+
+
+      const objectCenterY =
+        object.y +
+        object.height / 2;
+
+
       const dx =
-        player.x -
-        object.x;
+        playerCenterX -
+        objectCenterX;
+
 
       const dy =
-        player.y -
-        object.y;
+        playerCenterY -
+        objectCenterY;
 
 
       const distance =
@@ -1570,37 +1902,109 @@
         );
 
 
+      /*
+       * Guardamos solamente
+       * el objeto más cercano.
+       */
+
       if (
         distance <
-        interactionDistance
+        closestDistance
       ) {
 
-        nearbyObject = object;
+        closestDistance =
+          distance;
 
-        break;
+        closestObject =
+          object;
       }
+
     }
 
 
-    if (nearbyObject) {
+    /*
+     * ¿Hay un objeto suficientemente cerca?
+     */
+
+    if (
+      closestObject &&
+      closestDistance <=
+      interactionDistance
+    ) {
+
+      /*
+       * Si acabamos de acercarnos
+       * a un objeto diferente,
+       * mostramos nuevamente
+       * la indicación E.
+       */
+
+      if (
+        nearbyObject !==
+        closestObject
+      ) {
+
+        interactionShowingText =
+          false;
+      }
+
+
+      nearbyObject =
+        closestObject;
+
+
+      /*
+       * Si todavía no hemos
+       * interactuado.
+       */
+
+      if (
+        !interactionShowingText
+      ) {
+
+        interactionText.textContent =
+          "💗 E · Interactuar";
+
+      }
+
 
       interactionBox.classList.add(
         "visible"
       );
 
-      interactionText.textContent =
-        "💗 E · Interactuar";
-
     } else {
+
+      /*
+       * No hay objeto cerca.
+       */
+
+      nearbyObject =
+        null;
+
+
+      interactionShowingText =
+        false;
+
 
       interactionBox.classList.remove(
         "visible"
       );
+
     }
+
   }
 
 
+  /* =========================================================
+     INTERACTAR
+     ========================================================= */
+
   function interact() {
+
+    /*
+     * Si no hay objeto cerca,
+     * E no hace nada.
+     */
 
     if (!nearbyObject) {
 
@@ -1608,12 +2012,22 @@
     }
 
 
+    /*
+     * Mostrar el texto del objeto.
+     */
+
     interactionText.textContent =
       nearbyObject.text;
+
+
+    interactionShowingText =
+      true;
+
 
     interactionBox.classList.add(
       "visible"
     );
+
   }
 
 
@@ -1644,6 +2058,7 @@
     drawPortal();
 
     drawPlayer();
+
   }
 
 
@@ -1661,7 +2076,10 @@
 
     draw();
 
-    requestAnimationFrame(gameLoop);
+    requestAnimationFrame(
+      gameLoop
+    );
+
   }
 
 
