@@ -881,6 +881,25 @@
     }
 
 
+    /* NPCs */
+
+    for (
+      const npc of npcs
+      ) {
+
+      if (
+        rectanglesCollide(
+          futurePlayer,
+          npc
+        )
+      ) {
+
+        return false;
+      }
+
+    }
+
+
     return true;
   }
 
@@ -2474,7 +2493,7 @@
 
   /* =========================================================
      SISTEMA DE DIÁLOGO
-     * ========================================================= */
+     ========================================================= */
 
   const dialogueBox =
     document.getElementById(
