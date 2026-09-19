@@ -1769,6 +1769,197 @@
 
 
   /* =========================================================
+     FLOR RECOGIBLE
+     ========================================================= */
+
+  function drawCollectibleFlower(object) {
+
+    const x =
+      object.x - camera.x;
+
+    const y =
+      object.y - camera.y;
+
+
+    const centerX =
+      x + object.width / 2;
+
+    const centerY =
+      y + object.height / 2;
+
+
+    /*
+     * Sombra
+     */
+
+    ctx.fillStyle =
+      "rgba(0,0,0,0.20)";
+
+    ctx.fillRect(
+      centerX - 16,
+      centerY + 27,
+      32,
+      5
+    );
+
+
+    /*
+     * Tallo
+     */
+
+    ctx.fillStyle =
+      "#3d7545";
+
+    ctx.fillRect(
+      centerX - 3,
+      centerY - 2,
+      6,
+      35
+    );
+
+
+    /*
+     * Hoja izquierda
+     */
+
+    ctx.fillStyle =
+      "#4f8a4f";
+
+    ctx.fillRect(
+      centerX - 19,
+      centerY + 10,
+      16,
+      7
+    );
+
+
+    /*
+     * Hoja derecha
+     */
+
+    ctx.fillRect(
+      centerX + 3,
+      centerY + 17,
+      16,
+      7
+    );
+
+
+    /*
+     * Pétalos
+
+         */
+
+    ctx.fillStyle =
+      "#ff8fbe";
+
+
+    ctx.fillRect(
+      centerX - 18,
+      centerY - 13,
+      13,
+      13
+    );
+
+
+    ctx.fillRect(
+      centerX + 5,
+      centerY - 13,
+      13,
+      13
+    );
+
+
+    ctx.fillRect(
+      centerX - 7,
+      centerY - 24,
+      14,
+      14
+    );
+
+
+    ctx.fillRect(
+      centerX - 7,
+      centerY + 1,
+      14,
+      13
+    );
+
+
+    /*
+     * Centro amarillo
+     */
+
+    ctx.fillStyle =
+      "#ffd95c";
+
+
+    ctx.fillRect(
+      centerX - 7,
+      centerY - 13,
+      14,
+      14
+    );
+
+
+    /*
+     * Pequeños brillos
+
+         */
+
+    ctx.fillStyle =
+      "#fff5fb";
+
+
+    ctx.fillRect(
+      centerX + 21,
+      centerY - 24,
+      4,
+      4
+    );
+
+
+    ctx.fillRect(
+      centerX + 26,
+      centerY - 19,
+      4,
+      4
+    );
+
+
+    /*
+     * Indicador de interacción
+
+         */
+
+    if (
+      nearbyInteraction === object
+    ) {
+
+      ctx.fillStyle =
+        "#fff5fb";
+
+
+      ctx.font =
+        "bold 16px monospace";
+
+
+      ctx.textAlign =
+        "center";
+
+
+      ctx.fillText(
+        "!",
+        centerX,
+        y - 12
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
      OBJETOS INTERACTIVOS
      ========================================================= */
 
@@ -1784,6 +1975,25 @@
        */
 
       if (object.collected) {
+        continue;
+      }
+
+
+      /*
+       * La flor recogible tiene
+       * su propio diseño visual.
+       */
+
+      if (
+        object.collectible &&
+        object.item &&
+        object.item.id === "flower"
+      ) {
+
+        drawCollectibleFlower(
+          object
+        );
+
         continue;
       }
 
