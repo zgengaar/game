@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 
 <html lang="es">
@@ -1118,6 +1119,28 @@
     },
 
 
+    /* =====================================================
+       ALTAR DE LA FLOR · PASO 4.4
+       ===================================================== */
+
+    {
+      type: "flower-spot",
+
+      id: "flower-spot",
+
+      x: 1050,
+      y: 650,
+
+      width: 100,
+      height: 80,
+
+      activated: false,
+
+      text:
+        "💗 Hay algo especial en este lugar... como si estuviera esperando algo."
+    },
+
+
     {
       type: "object",
 
@@ -2134,6 +2157,227 @@
 
 
   /* =========================================================
+     ALTAR DE LA FLOR · PASO 4.4
+     ========================================================= */
+
+  function drawFlowerSpot(object) {
+
+    const x =
+      object.x - camera.x;
+
+    const y =
+      object.y - camera.y;
+
+
+    const centerX =
+      x + object.width / 2;
+
+    const centerY =
+      y + object.height / 2;
+
+
+    /*
+     * Sombra
+     */
+
+    ctx.fillStyle =
+      "rgba(0,0,0,0.20)";
+
+    ctx.fillRect(
+      centerX - 35,
+      centerY + 25,
+      70,
+      8
+    );
+
+
+    /*
+     * Base de piedra
+     */
+
+    ctx.fillStyle =
+      "#8b8294";
+
+    ctx.fillRect(
+      centerX - 35,
+      centerY - 5,
+      70,
+      35
+    );
+
+
+    /*
+     * Parte superior de la piedra
+     */
+
+    ctx.fillStyle =
+      "#aaa1b3";
+
+    ctx.fillRect(
+      centerX - 28,
+      centerY - 15,
+      56,
+      12
+    );
+
+
+    /*
+     * Detalle central
+     */
+
+    ctx.fillStyle =
+      object.activated
+        ? "#f3a6c8"
+        : "#6f6678";
+
+    ctx.fillRect(
+      centerX - 10,
+      centerY - 25,
+      20,
+      12
+    );
+
+
+    /*
+     * Si la flor ya fue colocada,
+     * la dibujamos sobre el pedestal.
+     */
+
+    if (object.activated) {
+
+      /*
+       * Tallo
+       */
+
+      ctx.fillStyle =
+        "#3d7545";
+
+      ctx.fillRect(
+        centerX - 3,
+        centerY - 13,
+        6,
+        25
+      );
+
+
+      /*
+       * Pétalos
+       */
+
+      ctx.fillStyle =
+        "#ff8fbe";
+
+      ctx.fillRect(
+        centerX - 17,
+        centerY - 25,
+        12,
+        12
+      );
+
+      ctx.fillRect(
+        centerX + 5,
+        centerY - 25,
+        12,
+        12
+      );
+
+      ctx.fillRect(
+        centerX - 6,
+        centerY - 35,
+        12,
+        12
+      );
+
+
+      /*
+       * Centro amarillo
+       */
+
+      ctx.fillStyle =
+        "#ffd95c";
+
+      ctx.fillRect(
+        centerX - 6,
+        centerY - 25,
+        12,
+        12
+      );
+
+
+      /*
+       * Brillo alrededor
+       */
+
+      ctx.fillStyle =
+        "#fff5fb";
+
+      ctx.fillRect(
+        centerX + 22,
+        centerY - 31,
+        4,
+        4
+      );
+
+      ctx.fillRect(
+        centerX + 27,
+        centerY - 26,
+        4,
+        4
+      );
+
+    } else {
+
+      /*
+       * Símbolo del pedestal
+       */
+
+      ctx.fillStyle =
+        "#c9b8d4";
+
+      ctx.font =
+        "20px monospace";
+
+      ctx.textAlign =
+        "center";
+
+      ctx.fillText(
+        "✦",
+        centerX,
+        centerY - 14
+      );
+
+    }
+
+
+    /*
+     * Indicador de interacción
+     */
+
+    if (
+      nearbyInteraction === object
+    ) {
+
+      ctx.fillStyle =
+        "#fff5fb";
+
+      ctx.font =
+        "bold 16px monospace";
+
+      ctx.textAlign =
+        "center";
+
+      ctx.fillText(
+        "!",
+        centerX,
+        y - 12
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
      OBJETOS INTERACTIVOS
      ========================================================= */
 
@@ -2146,9 +2390,28 @@
       /*
        * Si el objeto ya fue recogido,
        * no lo dibujamos.
+       *
+       * El altar no utiliza "collected",
+       * por lo que seguirá apareciendo.
        */
 
       if (object.collected) {
+        continue;
+      }
+
+
+      /*
+       * ALTAR DE LA FLOR
+       */
+
+      if (
+        object.type === "flower-spot"
+      ) {
+
+        drawFlowerSpot(
+          object
+        );
+
         continue;
       }
 
@@ -2922,6 +3185,43 @@
 
 
   /* =========================================================
+     ELIMINAR OBJETO DEL INVENTARIO
+     ========================================================= */
+
+  function removeFromInventory(itemId) {
+
+    if (!itemId) {
+      return false;
+    }
+
+
+    const itemIndex =
+      inventory.findIndex(
+        item =>
+          item.id === itemId
+      );
+
+
+    if (itemIndex === -1) {
+
+      return false;
+    }
+
+
+    inventory.splice(
+      itemIndex,
+      1
+    );
+
+
+    updateInventoryUI();
+
+
+    return true;
+  }
+
+
+  /* =========================================================
      RECOGER OBJETO
      ========================================================= */
 
@@ -3241,6 +3541,52 @@
     }
 
 
+    /* =====================================================
+       ALTAR DE LA FLOR
+       ===================================================== */
+
+    if (
+      interaction.type === "flower-spot"
+    ) {
+
+      /*
+       * Si la flor ya fue colocada,
+       * el lugar puede examinarse.
+       */
+
+      if (
+        interaction.activated
+      ) {
+
+        return "✨ E · Examinar";
+
+      }
+
+
+      /*
+       * Comprobamos si el jugador
+       * tiene la flor en el inventario.
+       */
+
+      const hasFlower =
+        inventory.some(
+          item =>
+            item.id === "flower"
+        );
+
+
+      if (hasFlower) {
+
+        return "🌸 E · Colocar flor";
+
+      }
+
+
+      return "💗 Parece que falta algo aquí...";
+
+    }
+
+
     if (
       interaction.collectible
     ) {
@@ -3376,6 +3722,116 @@
 
       return;
 
+    }
+
+
+    /* =====================================================
+       ALTAR DE LA FLOR · PASO 4.4
+       ===================================================== */
+
+    if (
+      nearbyInteraction.type === "flower-spot"
+    ) {
+
+      /*
+       * Si ya fue activado,
+       * mostramos su mensaje especial.
+       */
+
+      if (
+        nearbyInteraction.activated
+      ) {
+
+        interactionText.textContent =
+          "✨ La flor permanece aquí... como si guardara un recuerdo.";
+
+        interactionShowingText =
+          true;
+
+        interactionBox.classList.add(
+          "visible"
+        );
+
+        return;
+      }
+
+
+      /*
+       * Buscamos la flor en el inventario.
+       */
+
+      const hasFlower =
+        inventory.some(
+          item =>
+            item.id === "flower"
+        );
+
+
+      /*
+       * Si todavía no tenemos la flor,
+       * mostramos el mensaje del lugar.
+       */
+
+      if (!hasFlower) {
+
+        interactionText.textContent =
+          nearbyInteraction.text;
+
+        interactionShowingText =
+          true;
+
+        interactionBox.classList.add(
+          "visible"
+        );
+
+        return;
+      }
+
+
+      /*
+       * Intentamos retirar la flor
+       * del inventario.
+       */
+
+      const removed =
+        removeFromInventory(
+          "flower"
+        );
+
+
+      if (!removed) {
+
+        return;
+      }
+
+
+      /*
+       * Activamos permanentemente
+       * el pedestal.
+       */
+
+      nearbyInteraction.activated =
+        true;
+
+
+      /*
+       * Mostramos el primer mensaje
+       * narrativo del lugar.
+       */
+
+      interactionText.textContent =
+        "🌸 Has colocado la flor... Por alguna razón, este lugar se siente diferente.";
+
+      interactionShowingText =
+        true;
+
+
+      interactionBox.classList.add(
+        "visible"
+      );
+
+
+      return;
     }
 
 
@@ -3651,3 +4107,4 @@
 
 </body>
 </html>
+```
