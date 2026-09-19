@@ -747,6 +747,13 @@
 
 
   /* =========================================================
+     EFECTOS · PASO 4.5
+     ========================================================= */
+
+  let flowerActivationEffect = 0;
+
+
+  /* =========================================================
      TECLAS
      ========================================================= */
 
@@ -1141,8 +1148,12 @@
     },
 
 
+    /* =====================================================
+       PRIMER RECUERDO · PASO 4.5
+       ===================================================== */
+
     {
-      type: "object",
+      type: "memory",
 
       id: "memory-1",
 
@@ -1152,8 +1163,10 @@
       width: 90,
       height: 90,
 
+      unlocked: false,
+
       text:
-        "💗 Aquí podremos colocar una foto o un recuerdo importante."
+        "💗 Hay recuerdos que parecen pequeños... hasta que alguien decide guardarlos."
     },
 
 
@@ -2378,6 +2391,315 @@
 
 
   /* =========================================================
+     PRIMER RECUERDO · PASO 4.5
+     ========================================================= */
+
+  function drawFirstMemory(object) {
+
+    const x =
+      object.x - camera.x;
+
+    const y =
+      object.y - camera.y;
+
+
+    const centerX =
+      x + object.width / 2;
+
+    const centerY =
+      y + object.height / 2;
+
+
+    /*
+     * Sombra
+     */
+
+    ctx.fillStyle =
+      "rgba(0,0,0,0.20)";
+
+    ctx.fillRect(
+      centerX - 32,
+      centerY + 28,
+      64,
+      7
+    );
+
+
+    /*
+     * Pequeña base
+     */
+
+    ctx.fillStyle =
+      "#70472c";
+
+    ctx.fillRect(
+      centerX - 38,
+      centerY + 18,
+      76,
+      12
+    );
+
+
+    /*
+     * Marco
+     */
+
+    ctx.fillStyle =
+      "#b79ae8";
+
+    ctx.fillRect(
+      centerX - 30,
+      centerY - 32,
+      60,
+      52
+    );
+
+
+    /*
+     * Interior del marco
+     */
+
+    ctx.fillStyle =
+      "#241b38";
+
+    ctx.fillRect(
+      centerX - 23,
+      centerY - 25,
+      46,
+      38
+    );
+
+
+    /*
+     * Corazón central
+     */
+
+    ctx.fillStyle =
+      "#f3a6c8";
+
+    ctx.font =
+      "28px monospace";
+
+    ctx.textAlign =
+      "center";
+
+    ctx.fillText(
+      "♥",
+      centerX,
+      centerY + 6
+    );
+
+
+    /*
+     * Brillos
+     */
+
+    ctx.fillStyle =
+      "#fff5fb";
+
+    ctx.fillRect(
+      centerX + 34,
+      centerY - 30,
+      4,
+      4
+    );
+
+    ctx.fillRect(
+      centerX + 40,
+      centerY - 24,
+      4,
+      4
+    );
+
+
+    /*
+     * Indicador de interacción
+     */
+
+    if (
+      nearbyInteraction === object
+    ) {
+
+      ctx.fillStyle =
+        "#fff5fb";
+
+      ctx.font =
+        "bold 16px monospace";
+
+      ctx.fillText(
+        "!",
+        centerX,
+        y - 40
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     EFECTO DE ACTIVACIÓN · PASO 4.5
+     ========================================================= */
+
+  function drawFlowerActivationEffect() {
+
+    if (
+      flowerActivationEffect <= 0
+    ) {
+
+      return;
+    }
+
+
+    const altar = interactables.find(
+      object =>
+        object.type === "flower-spot"
+    );
+
+
+    if (!altar) {
+
+      return;
+    }
+
+
+    const centerX =
+      altar.x +
+      altar.width / 2 -
+      camera.x;
+
+
+    const centerY =
+      altar.y +
+      altar.height / 2 -
+      camera.y;
+
+
+    const progress =
+      flowerActivationEffect / 180;
+
+
+    /*
+     * Partículas alrededor del altar.
+     */
+
+    ctx.fillStyle =
+      "#fff5fb";
+
+
+    const particles = [
+
+      [-45, -20],
+      [-32, -42],
+      [-10, -52],
+      [18, -45],
+      [40, -25],
+      [48, 5],
+      [32, 28],
+      [-28, 30]
+
+    ];
+
+
+    for (
+      let i = 0;
+      i < particles.length;
+      i++
+    ) {
+
+      const particle =
+        particles[i];
+
+
+      const movement =
+        (1 - progress) *
+        (i % 2 === 0 ? 18 : -18);
+
+
+      const size =
+        3 +
+        (i % 3);
+
+
+      ctx.fillRect(
+        centerX +
+        particle[0] +
+        movement,
+        centerY +
+        particle[1] -
+        (1 - progress) * 15,
+        size,
+        size
+      );
+
+    }
+
+
+    /*
+     * Círculo de luz alrededor del altar.
+     */
+
+    ctx.strokeStyle =
+      `rgba(255,245,251,${progress * 0.55})`;
+
+    ctx.lineWidth =
+      3;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      centerX,
+      centerY - 15,
+      35 + (1 - progress) * 45,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.stroke();
+
+
+    /*
+     * Disminuimos el efecto.
+     */
+
+    flowerActivationEffect--;
+
+  }
+
+
+  /* =========================================================
+     EFECTO DE PANTALLA · PASO 4.5
+     ========================================================= */
+
+  function drawActivationScreenEffect() {
+
+    if (
+      flowerActivationEffect <= 0
+    ) {
+
+      return;
+    }
+
+
+    const progress =
+      flowerActivationEffect / 180;
+
+
+    ctx.fillStyle =
+      `rgba(243,166,200,${progress * 0.10})`;
+
+
+    ctx.fillRect(
+      0,
+      0,
+      screenWidth,
+      screenHeight
+    );
+
+  }
+
+
+  /* =========================================================
      OBJETOS INTERACTIVOS
      ========================================================= */
 
@@ -2391,11 +2713,35 @@
        * Si el objeto ya fue recogido,
        * no lo dibujamos.
        *
-       * El altar no utiliza "collected",
-       * por lo que seguirá apareciendo.
+       * El altar no utiliza "collected".
        */
 
       if (object.collected) {
+        continue;
+      }
+
+
+      /*
+       * PRIMER RECUERDO
+       *
+       * Solo aparece después de activar
+       * el altar de la flor.
+       */
+
+      if (
+        object.type === "memory" &&
+        object.id === "memory-1"
+      ) {
+
+        if (!object.unlocked) {
+          continue;
+        }
+
+
+        drawFirstMemory(
+          object
+        );
+
         continue;
       }
 
@@ -3464,6 +3810,21 @@
       }
 
 
+      /*
+       * El primer recuerdo permanece
+       * bloqueado hasta activar el altar.
+       */
+
+      if (
+        object.type === "memory" &&
+        object.id === "memory-1" &&
+        !object.unlocked
+      ) {
+
+        continue;
+      }
+
+
       const distance =
         getEntityDistance(
           player,
@@ -3583,6 +3944,19 @@
 
 
       return "💗 Parece que falta algo aquí...";
+
+    }
+
+
+    /* =====================================================
+       PRIMER RECUERDO · PASO 4.5
+       ===================================================== */
+
+    if (
+      interaction.type === "memory"
+    ) {
+
+      return "💗 E · Primer recuerdo";
 
     }
 
@@ -3726,7 +4100,7 @@
 
 
     /* =====================================================
-       ALTAR DE LA FLOR · PASO 4.4
+       ALTAR DE LA FLOR · PASO 4.4 + 4.5
        ===================================================== */
 
     if (
@@ -3815,12 +4189,97 @@
 
 
       /*
-       * Mostramos el primer mensaje
-       * narrativo del lugar.
+       * =====================================================
+       * PASO 4.5
+       * DESBLOQUEAMOS EL PRIMER RECUERDO
+       * =====================================================
+       */
+
+      const firstMemory =
+        interactables.find(
+          object =>
+            object.id === "memory-1"
+        );
+
+
+      if (firstMemory) {
+
+        firstMemory.unlocked =
+          true;
+
+      }
+
+
+      /*
+       * Activamos el efecto visual.
+       */
+
+      flowerActivationEffect =
+        180;
+
+
+      /*
+       * Mostramos el mensaje narrativo.
        */
 
       interactionText.textContent =
-        "🌸 Has colocado la flor... Por alguna razón, este lugar se siente diferente.";
+        "🌸 Has colocado la flor... Por alguna razón, este lugar se siente diferente. Algo parece haber despertado. 💗";
+
+      interactionShowingText =
+        true;
+
+
+      interactionBox.classList.add(
+        "visible"
+      );
+
+
+      /*
+       * Después de unos segundos,
+       * volvemos a mostrar el prompt
+       * normal del altar.
+       */
+
+      const activatedSpot =
+        nearbyInteraction;
+
+
+      setTimeout(
+        function() {
+
+          if (
+            !dialogueActive &&
+            !inventoryOpen &&
+            !itemDetailOpen &&
+            nearbyInteraction === activatedSpot
+          ) {
+
+            interactionShowingText =
+              false;
+
+            updateInteraction();
+
+          }
+
+        },
+        3500
+      );
+
+
+      return;
+    }
+
+
+    /* =====================================================
+       PRIMER RECUERDO · PASO 4.5
+       ===================================================== */
+
+    if (
+      nearbyInteraction.type === "memory"
+    ) {
+
+      interactionText.textContent =
+        "💗 Hay recuerdos que parecen pequeños... hasta que alguien decide guardarlos.";
 
       interactionShowingText =
         true;
@@ -4067,11 +4526,15 @@
 
     drawInteractables();
 
+    drawFlowerActivationEffect();
+
     drawPortal();
 
     drawNPCs();
 
     drawPlayer();
+
+    drawActivationScreenEffect();
 
   }
 
