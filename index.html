@@ -1,4 +1,4 @@
-```
+```html
 <!DOCTYPE html>
 
 <html lang="es">
@@ -402,7 +402,6 @@
   </div>
 
 
-
   <!-- =========================
        CAJA DE DIÁLOGO
        ========================= -->
@@ -545,6 +544,25 @@
   };
 
 
+  /*
+   * Detener completamente el movimiento.
+   *
+   * Esto se utiliza cuando abrimos el inventario
+   * para asegurarnos de que ninguna tecla o control
+   * táctil que estuviera activo siga moviendo al jugador.
+   */
+
+  function stopPlayerMovement() {
+
+    keys.up = false;
+    keys.down = false;
+    keys.left = false;
+    keys.right = false;
+
+    player.moving = false;
+  }
+
+
   window.addEventListener("keydown", function(event) {
 
     /*
@@ -581,7 +599,22 @@
     ) {
 
       toggleInventory();
+
       event.preventDefault();
+
+      return;
+    }
+
+
+    /*
+     * Si el inventario está abierto,
+     * bloqueamos completamente el teclado.
+     */
+
+    if (inventoryOpen) {
+
+      event.preventDefault();
+
       return;
     }
 
@@ -701,7 +734,7 @@
 
         event.preventDefault();
 
-        if (!dialogueActive) {
+        if (!dialogueActive && !inventoryOpen) {
 
           keys[direction] = true;
         }
@@ -1005,7 +1038,7 @@
 
     /*
      * No mover al jugador
-     * mientras hay diálogo.
+     * mientras hay diálogo o inventario.
      */
 
     if (dialogueActive || inventoryOpen) {
@@ -2272,13 +2305,23 @@
    * El inventario comienza vacío.
    * En los siguientes pasos agregaremos objetos reales.
    */
+
   const inventory = [];
+
 
   function toggleInventory() {
 
     inventoryOpen = !inventoryOpen;
 
+
     if (inventoryOpen) {
+
+      /*
+       * Detenemos completamente al jugador
+       * al abrir el inventario.
+       */
+
+      stopPlayerMovement();
 
       inventoryBox.classList.add("visible");
 
@@ -2325,6 +2368,7 @@
    * - portal
    * - etc.
    */
+
   let nearbyInteraction = null;
 
 
@@ -2395,6 +2439,7 @@
     /*
      * Buscamos entre todos los objetos.
      */
+
     for (
       const object of interactables
       ) {
@@ -2426,6 +2471,7 @@
     /*
      * Buscamos también entre todos los NPCs.
      */
+
     for (
       const npc of npcs
       ) {
@@ -2509,6 +2555,7 @@
      * Si cambió el objetivo cercano,
      * reiniciamos el texto del objeto.
      */
+
     if (
       newInteraction !== nearbyInteraction
     ) {
@@ -2543,6 +2590,7 @@
      * Si ya mostramos el texto de un objeto,
      * lo mantenemos visible.
      */
+
     if (
       interactionShowingText &&
       nearbyInteraction.type !== "npc"
@@ -2581,6 +2629,7 @@
       return;
     }
 
+
     if (
       !nearbyInteraction
     ) {
@@ -2593,6 +2642,7 @@
     /*
      * NPC
      */
+
     if (
       nearbyInteraction.type === "npc"
     ) {
@@ -2610,6 +2660,7 @@
     /*
      * Objeto con texto
      */
+
     if (
       nearbyInteraction.text
     ) {
@@ -2871,5 +2922,4 @@
 
 </body>
 </html>
-
 ```
