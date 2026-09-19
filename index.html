@@ -129,6 +129,57 @@
     }
 
     /* =========================
+       INVENTARIO
+       ========================= */
+
+    #inventory {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+
+      width: min(520px, 86%);
+      min-height: 300px;
+      padding: 22px;
+
+      background: rgba(18, 14, 28, 0.97);
+      border: 2px solid #f3a6c8;
+      border-radius: 16px;
+
+      color: white;
+      display: none;
+      z-index: 100;
+
+      box-shadow: 0 0 35px rgba(243, 166, 200, 0.25);
+    }
+
+    #inventory.visible {
+      display: block;
+    }
+
+    #inventory-title {
+      color: #f3a6c8;
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    #inventory-empty {
+      color: #c9b8d4;
+      text-align: center;
+      line-height: 1.6;
+      padding: 55px 15px;
+    }
+
+    #inventory-hint {
+      color: #9e8ca8;
+      font-size: 11px;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    /* =========================
        DIÁLOGO
        ========================= */
 
@@ -322,12 +373,34 @@
   </div>
 
   <div id="controls-info">
-    WASD / Flechas para moverte · E para interactuar
+    WASD / Flechas para moverte · E para interactuar · I para inventario
   </div>
 
   <div id="interaction">
     <span id="interaction-text"></span>
   </div>
+
+  <!-- =========================
+       INVENTARIO
+       ========================= -->
+
+  <div id="inventory">
+
+    <div id="inventory-title">
+      🎒 Inventario
+    </div>
+
+    <div id="inventory-empty">
+      Tu inventario está vacío.<br>
+      Aquí aparecerán los objetos que encuentres durante la aventura. 💗
+    </div>
+
+    <div id="inventory-hint">
+      I · Abrir / cerrar inventario
+    </div>
+
+  </div>
+
 
 
   <!-- =========================
@@ -494,6 +567,21 @@
         event.preventDefault();
       }
 
+      return;
+    }
+
+
+    /* =========================
+       TECLA I · INVENTARIO
+       ========================= */
+
+    if (
+      event.key.toLowerCase() === "i" &&
+      !event.repeat
+    ) {
+
+      toggleInventory();
+      event.preventDefault();
       return;
     }
 
@@ -2172,6 +2260,42 @@
 
 
   /* =========================================================
+     INVENTARIO · PASO 4.1
+     ========================================================= */
+
+  const inventoryBox =
+    document.getElementById("inventory");
+
+  let inventoryOpen = false;
+
+  /*
+   * El inventario comienza vacío.
+   * En los siguientes pasos agregaremos objetos reales.
+   */
+  const inventory = [];
+
+  function toggleInventory() {
+
+    inventoryOpen = !inventoryOpen;
+
+    if (inventoryOpen) {
+
+      inventoryBox.classList.add("visible");
+
+      interactionBox.classList.remove("visible");
+
+    } else {
+
+      inventoryBox.classList.remove("visible");
+
+      updateInteraction();
+
+    }
+
+  }
+
+
+  /* =========================================================
      SISTEMA DE INTERACCIÓN REUTILIZABLE
      ========================================================= */
 
@@ -2366,7 +2490,7 @@
 
   function updateInteraction() {
 
-    if (dialogueActive) {
+    if (dialogueActive || inventoryOpen) {
 
       interactionBox.classList.remove(
         "visible"
@@ -2452,6 +2576,10 @@
      ========================================================= */
 
   function interact() {
+
+    if (inventoryOpen) {
+      return;
+    }
 
     if (
       !nearbyInteraction
