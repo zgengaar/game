@@ -205,6 +205,11 @@
       transition:
         background 0.2s,
         transform 0.2s;
+
+      cursor: pointer;
+
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     .inventory-item:hover {
@@ -212,6 +217,10 @@
         rgba(243, 166, 200, 0.16);
 
       transform: translateY(-2px);
+    }
+
+    .inventory-item:active {
+      transform: translateY(0) scale(0.98);
     }
 
     .inventory-item-icon {
@@ -237,6 +246,105 @@
       font-size: 11px;
       text-align: center;
       margin-top: 16px;
+    }
+
+    /* =========================
+       DETALLE DEL OBJETO
+       ========================= */
+
+    #item-detail {
+      position: absolute;
+
+      left: 50%;
+      top: 50%;
+
+      transform: translate(-50%, -50%);
+
+      width: min(400px, 82%);
+
+      padding: 25px;
+
+      background: rgba(18, 14, 28, 0.98);
+
+      border: 2px solid #f3a6c8;
+      border-radius: 16px;
+
+      color: white;
+
+      display: none;
+
+      z-index: 200;
+
+      box-shadow:
+        0 0 40px rgba(243, 166, 200, 0.3);
+
+      text-align: center;
+    }
+
+    #item-detail.visible {
+      display: block;
+    }
+
+    #item-detail-icon {
+      font-size: 64px;
+
+      margin-bottom: 12px;
+
+      filter:
+        drop-shadow(
+          0 0 8px
+          rgba(243, 166, 200, 0.35)
+        );
+    }
+
+    #item-detail-name {
+      color: #f3a6c8;
+
+      font-size: 22px;
+      font-weight: bold;
+
+      margin-bottom: 14px;
+    }
+
+    #item-detail-description {
+      color: #fff5fb;
+
+      font-size: 13px;
+      line-height: 1.7;
+
+      margin-bottom: 22px;
+    }
+
+    #item-detail-close {
+      padding: 10px 24px;
+
+      border: 2px solid #f3a6c8;
+      border-radius: 9px;
+
+      background: rgba(243, 166, 200, 0.12);
+
+      color: #fff5fb;
+
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: bold;
+
+      cursor: pointer;
+
+      transition:
+        background 0.2s,
+        transform 0.2s;
+    }
+
+    #item-detail-close:hover {
+      background:
+        rgba(243, 166, 200, 0.25);
+
+      transform: translateY(-1px);
+    }
+
+    #item-detail-close:active {
+      transform: scale(0.97);
     }
 
     /* =========================
@@ -429,6 +537,15 @@
           repeat(2, 1fr);
       }
 
+      #item-detail {
+        width: 88%;
+        padding: 22px;
+      }
+
+      #item-detail-icon {
+        font-size: 56px;
+      }
+
     }
   </style>
 
@@ -472,6 +589,29 @@
     <div id="inventory-hint">
       I · Abrir / cerrar inventario
     </div>
+
+  </div>
+
+  <!-- =========================
+       DETALLE DEL OBJETO
+       ========================= -->
+
+  <div id="item-detail">
+
+    <div id="item-detail-icon">
+    </div>
+
+    <div id="item-detail-name">
+    </div>
+
+    <div id="item-detail-description">
+    </div>
+
+    <button
+      id="item-detail-close"
+      type="button">
+      Cerrar
+    </button>
 
   </div>
 
@@ -659,7 +799,36 @@
       !event.repeat
     ) {
 
-      toggleInventory();
+      if (!itemDetailOpen) {
+        toggleInventory();
+      }
+
+      event.preventDefault();
+
+      return;
+    }
+
+
+    /*
+     * Si el detalle de un objeto está abierto,
+     * bloqueamos completamente el teclado.
+     */
+
+    if (itemDetailOpen) {
+
+      if (
+        event.key === "Escape" ||
+        event.key.toLowerCase() === "e"
+      ) {
+
+        if (!event.repeat) {
+          closeItemDetail();
+        }
+
+        event.preventDefault();
+
+        return;
+      }
 
       event.preventDefault();
 
@@ -795,7 +964,11 @@
 
         event.preventDefault();
 
-        if (!dialogueActive && !inventoryOpen) {
+        if (
+          !dialogueActive &&
+          !inventoryOpen &&
+          !itemDetailOpen
+        ) {
 
           keys[direction] = true;
         }
@@ -1111,7 +1284,11 @@
 
   function updatePlayer() {
 
-    if (dialogueActive || inventoryOpen) {
+    if (
+      dialogueActive ||
+      inventoryOpen ||
+      itemDetailOpen
+    ) {
 
       player.moving = false;
 
@@ -1847,8 +2024,7 @@
 
     /*
      * Pétalos
-
-         */
+     */
 
     ctx.fillStyle =
       "#ff8fbe";
@@ -1904,8 +2080,7 @@
 
     /*
      * Pequeños brillos
-
-         */
+     */
 
     ctx.fillStyle =
       "#fff5fb";
@@ -1929,8 +2104,7 @@
 
     /*
      * Indicador de interacción
-
-         */
+     */
 
     if (
       nearbyInteraction === object
@@ -2495,7 +2669,7 @@
 
 
   /* =========================================================
-     INVENTARIO · PASO 4.2
+     INVENTARIO · PASO 4.3
      ========================================================= */
 
   const inventoryBox =
@@ -2516,6 +2690,103 @@
    */
 
   const inventory = [];
+
+
+  /* =========================================================
+     DETALLE DEL OBJETO
+     ========================================================= */
+
+  const itemDetail =
+    document.getElementById(
+      "item-detail"
+    );
+
+  const itemDetailIcon =
+    document.getElementById(
+      "item-detail-icon"
+    );
+
+  const itemDetailName =
+    document.getElementById(
+      "item-detail-name"
+    );
+
+  const itemDetailDescription =
+    document.getElementById(
+      "item-detail-description"
+    );
+
+  const itemDetailClose =
+    document.getElementById(
+      "item-detail-close"
+    );
+
+  let itemDetailOpen = false;
+
+
+  /* =========================================================
+     ABRIR DETALLE DEL OBJETO
+     ========================================================= */
+
+  function openItemDetail(item) {
+
+    if (!item) {
+      return;
+    }
+
+
+    itemDetailIcon.textContent =
+      item.icon;
+
+
+    itemDetailName.textContent =
+      item.name;
+
+
+    itemDetailDescription.textContent =
+      item.description;
+
+
+    itemDetailOpen = true;
+
+
+    stopPlayerMovement();
+
+
+    itemDetail.classList.add(
+      "visible"
+    );
+
+  }
+
+
+  /* =========================================================
+     CERRAR DETALLE DEL OBJETO
+     ========================================================= */
+
+  function closeItemDetail() {
+
+    itemDetailOpen = false;
+
+
+    itemDetail.classList.remove(
+      "visible"
+    );
+
+
+    stopPlayerMovement();
+
+  }
+
+
+  itemDetailClose.addEventListener(
+    "click",
+    function() {
+
+      closeItemDetail();
+
+    }
+  );
 
 
   /* =========================================================
@@ -2586,6 +2857,21 @@
         </div>
 
       `;
+
+
+      /*
+       * Al hacer clic en el objeto,
+       * abrimos su información detallada.
+       */
+
+      itemElement.addEventListener(
+        "click",
+        function() {
+
+          openItemDetail(item);
+
+        }
+      );
 
 
       inventoryItems.appendChild(
@@ -2715,7 +3001,8 @@
 
         if (
           !dialogueActive &&
-          !inventoryOpen
+          !inventoryOpen &&
+          !itemDetailOpen
         ) {
 
           interactionBox.classList.remove(
@@ -2732,6 +3019,17 @@
 
 
   function toggleInventory() {
+
+    /*
+     * Si estamos viendo el detalle
+     * de un objeto, no abrimos/cerramos
+     * el inventario desde aquí.
+     */
+
+    if (itemDetailOpen) {
+      return;
+    }
+
 
     inventoryOpen = !inventoryOpen;
 
@@ -2963,7 +3261,11 @@
 
   function updateInteraction() {
 
-    if (dialogueActive || inventoryOpen) {
+    if (
+      dialogueActive ||
+      inventoryOpen ||
+      itemDetailOpen
+    ) {
 
       interactionBox.classList.remove(
         "visible"
@@ -3042,7 +3344,11 @@
 
   function interact() {
 
-    if (inventoryOpen) {
+    if (
+      inventoryOpen ||
+      itemDetailOpen
+    ) {
+
       return;
     }
 
