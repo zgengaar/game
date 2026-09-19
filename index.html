@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 
 <html lang="es">
@@ -3005,6 +3004,13 @@
 
   function drawPlayer() {
 
+    /*
+     * PERSONAJE · NUEVA ESTÉTICA PIXEL ART
+     *
+     * Conservamos exactamente la posición y la colisión
+     * del personaje. Solo cambiamos su apariencia visual.
+     */
+
     const x =
       player.x - camera.x;
 
@@ -3012,77 +3018,348 @@
       player.y - camera.y;
 
 
+    /*
+     * El sprite visual es un poco más grande que
+     * la caja de colisión para darle una apariencia
+     * más cercana a un personaje chibi de RPG.
+     */
+
+    const spriteX =
+      x - 5;
+
+    const spriteY =
+      y - 8;
+
+
+    /*
+     * Sombra
+     */
+
     ctx.fillStyle =
       "rgba(0,0,0,0.25)";
 
-
     ctx.fillRect(
-      x + 5,
-      y + player.height - 4,
-      player.width - 10,
-      7
+      x + 4,
+      y + player.height - 3,
+      player.width - 8,
+      6
     );
 
+
+    /*
+     * =========================
+     * CABELLO TRASERO
+     * =========================
+     */
 
     ctx.fillStyle =
-      "#4a2945";
-
+      "#6f2f3d";
 
     ctx.fillRect(
-      x + 7,
-      y,
-      24,
-      18
+      spriteX + 11,
+      spriteY + 3,
+      28,
+      26
     );
 
+    ctx.fillRect(
+      spriteX + 7,
+      spriteY + 10,
+      36,
+      16
+    );
+
+    ctx.fillRect(
+      spriteX + 9,
+      spriteY + 22,
+      8,
+      12
+    );
+
+    ctx.fillRect(
+      spriteX + 35,
+      spriteY + 20,
+      8,
+      15
+    );
+
+
+    /*
+     * =========================
+     * CABEZA
+     * =========================
+     */
 
     ctx.fillStyle =
       "#ffd1bd";
 
-
     ctx.fillRect(
-      x + 10,
-      y + 10,
-      18,
-      18
+      spriteX + 13,
+      spriteY + 13,
+      24,
+      22
     );
 
+    ctx.fillRect(
+      spriteX + 16,
+      spriteY + 10,
+      18,
+      26
+    );
+
+
+    /*
+     * Orejas
+     */
+
+    ctx.fillStyle =
+      "#f3c0ad";
+
+    ctx.fillRect(
+      spriteX + 10,
+      spriteY + 19,
+      4,
+      8
+    );
+
+    ctx.fillRect(
+      spriteX + 36,
+      spriteY + 19,
+      4,
+      8
+    );
+
+
+    /*
+     * =========================
+     * CABELLO FRONTAL
+     * =========================
+     *
+     * Rojo apagado / vino suave.
+     * No es un rojo intenso.
+     */
+
+    ctx.fillStyle =
+      "#8f4350";
+
+    ctx.fillRect(
+      spriteX + 12,
+      spriteY + 7,
+      27,
+      9
+    );
+
+    ctx.fillRect(
+      spriteX + 9,
+      spriteY + 12,
+      10,
+      12
+    );
+
+    ctx.fillRect(
+      spriteX + 16,
+      spriteY + 13,
+      7,
+      10
+    );
+
+    ctx.fillRect(
+      spriteX + 25,
+      spriteY + 12,
+      7,
+      8
+    );
+
+    ctx.fillRect(
+      spriteX + 32,
+      spriteY + 10,
+      9,
+      14
+    );
+
+
+    /*
+     * Mechones
+     */
+
+    ctx.fillStyle =
+      "#6f2f3d";
+
+    ctx.fillRect(
+      spriteX + 8,
+      spriteY + 17,
+      7,
+      14
+    );
+
+    ctx.fillRect(
+      spriteX + 35,
+      spriteY + 18,
+      7,
+      14
+    );
+
+    ctx.fillRect(
+      spriteX + 18,
+      spriteY + 15,
+      5,
+      10
+    );
+
+
+    /*
+     * Brillos suaves del cabello
+     */
+
+    ctx.fillStyle =
+      "#b45a67";
+
+    ctx.fillRect(
+      spriteX + 18,
+      spriteY + 8,
+      8,
+      3
+    );
+
+    ctx.fillRect(
+      spriteX + 28,
+      spriteY + 8,
+      5,
+      3
+    );
+
+
+    /*
+     * =========================
+     * OJOS
+     * =========================
+     */
 
     ctx.fillStyle =
       "#4a2945";
 
+    ctx.fillRect(
+      spriteX + 16,
+      spriteY + 23,
+      5,
+      6
+    );
 
     ctx.fillRect(
-      x + 5,
-      y + 12,
-      6,
-      25
+      spriteX + 29,
+      spriteY + 23,
+      5,
+      6
     );
 
 
-    ctx.fillRect(
-      x + 27,
-      y + 12,
-      6,
-      25
-    );
-
+    /*
+     * Brillos de los ojos
+     */
 
     ctx.fillStyle =
-      "#d982ae";
-
+      "#fff5fb";
 
     ctx.fillRect(
-      x + 7,
-      y + 29,
-      24,
+      spriteX + 17,
+      spriteY + 23,
+      2,
+      2
+    );
+
+    ctx.fillRect(
+      spriteX + 30,
+      spriteY + 23,
+      2,
+      2
+    );
+
+
+    /*
+     * Boca
+     */
+
+    ctx.fillStyle =
+      "#b85f72";
+
+    ctx.fillRect(
+      spriteX + 23,
+      spriteY + 31,
+      5,
+      2
+    );
+
+
+    /*
+     * =========================
+     * CUELLO
+     * =========================
+     */
+
+    ctx.fillStyle =
+      "#f3c0ad";
+
+    ctx.fillRect(
+      spriteX + 22,
+      spriteY + 34,
+      7,
+      5
+    );
+
+
+    /*
+     * =========================
+     * CUERPO / ROPA
+     * =========================
+     */
+
+    ctx.fillStyle =
+      "#fff5fb";
+
+    ctx.fillRect(
+      spriteX + 12,
+      spriteY + 37,
+      26,
       17
     );
 
 
-    ctx.fillStyle =
-      "#4c426d";
+    /*
+     * Parte rosada de la ropa
+     */
 
+    ctx.fillStyle =
+      "#e9a0bd";
+
+    ctx.fillRect(
+      spriteX + 14,
+      spriteY + 44,
+      22,
+      12
+    );
+
+
+    /*
+     * Detalle central
+     */
+
+    ctx.fillStyle =
+      "#f3a6c8";
+
+    ctx.fillRect(
+      spriteX + 23,
+      spriteY + 38,
+      5,
+      12
+    );
+
+
+    /*
+     * Brazos
+     */
+
+    ctx.fillStyle =
+      "#ffd1bd";
 
     if (
       player.moving &&
@@ -3090,41 +3367,131 @@
     ) {
 
       ctx.fillRect(
-        x + 8,
-        y + 44,
-        8,
-        7
+        spriteX + 8,
+        spriteY + 39,
+        6,
+        16
       );
 
-
       ctx.fillRect(
-        x + 22,
-        y + 42,
-        8,
-        9
+        spriteX + 36,
+        spriteY + 42,
+        6,
+        13
       );
 
     } else {
 
       ctx.fillRect(
-        x + 9,
-        y + 44,
-        8,
-        7
+        spriteX + 8,
+        spriteY + 40,
+        6,
+        14
       );
 
-
       ctx.fillRect(
-        x + 21,
-        y + 44,
-        8,
-        7
+        spriteX + 36,
+        spriteY + 40,
+        6,
+        14
       );
 
     }
 
-  }
 
+    /*
+     * =========================
+     * PIERNAS
+     * =========================
+     */
+
+    ctx.fillStyle =
+      "#fff5fb";
+
+    if (
+      player.moving &&
+      player.animationFrame === 1
+    ) {
+
+      ctx.fillRect(
+        spriteX + 15,
+        spriteY + 53,
+        8,
+        10
+      );
+
+      ctx.fillRect(
+        spriteX + 28,
+        spriteY + 51,
+        8,
+        12
+      );
+
+    } else {
+
+      ctx.fillRect(
+        spriteX + 15,
+        spriteY + 53,
+        8,
+        11
+      );
+
+      ctx.fillRect(
+        spriteX + 28,
+        spriteY + 53,
+        8,
+        11
+      );
+
+    }
+
+
+    /*
+     * =========================
+     * ZAPATOS
+     * =========================
+     */
+
+    ctx.fillStyle =
+      "#d9cce4";
+
+    ctx.fillRect(
+      spriteX + 13,
+      spriteY + 61,
+      11,
+      5
+    );
+
+    ctx.fillRect(
+      spriteX + 27,
+      spriteY + 61,
+      11,
+      5
+    );
+
+
+    /*
+     * Pequeños detalles rosados en los zapatos
+     */
+
+    ctx.fillStyle =
+      "#e9a0bd";
+
+    ctx.fillRect(
+      spriteX + 15,
+      spriteY + 61,
+      7,
+      2
+    );
+
+    ctx.fillRect(
+      spriteX + 29,
+      spriteY + 61,
+      7,
+      2
+    );
+
+  }
 
   /* =========================================================
      CARTEL DEL COMIENZO
@@ -4571,3 +4938,5 @@
 </body>
 </html>
 ```
+
+````
