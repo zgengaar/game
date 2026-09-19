@@ -1,3 +1,4 @@
+```
 <!DOCTYPE html>
 
 <html lang="es">
@@ -737,6 +738,7 @@
   const interactables = [
 
     {
+      type: "object",
       x: 850,
       y: 820,
 
@@ -749,6 +751,7 @@
 
 
     {
+      type: "object",
       x: 1500,
       y: 720,
 
@@ -761,6 +764,7 @@
 
 
     {
+      type: "object",
       x: 2100,
       y: 500,
 
@@ -781,6 +785,7 @@
   const npcs = [
 
     {
+      type: "npc",
       id: "test-npc",
 
       name: "???",
@@ -1671,7 +1676,7 @@
       /* Indicador del objeto cercano */
 
       if (
-        nearbyObject === object
+        nearbyInteraction === object
       ) {
 
         ctx.fillStyle =
@@ -1825,7 +1830,7 @@
      */
 
     if (
-      nearbyNPC === npc &&
+      nearbyInteraction === npc &&
       !dialogueActive
     ) {
 
@@ -2167,7 +2172,7 @@
 
 
   /* =========================================================
-     INTERACCIÓN
+     SISTEMA DE INTERACCIÓN REUTILIZABLE
      ========================================================= */
 
   const interactionBox =
@@ -2182,9 +2187,22 @@
     );
 
 
-  let nearbyObject = null;
+  /*
+   * Esta variable guarda cualquier cosa
+   * con la que el jugador pueda interactuar.
+   *
+   * Puede ser:
+   * - NPC
+   * - objeto
+   * - puerta
+   * - cofre
+   * - cartel
+   * - foto
+   * - portal
+   * - etc.
+   */
+  let nearbyInteraction = null;
 
-  let nearbyNPC = null;
 
   let interactionShowingText =
     false;
@@ -2194,84 +2212,150 @@
 
 
   /* =========================================================
-     BUSCAR NPC CERCANO
+     DISTANCIA ENTRE DOS ENTIDADES
      ========================================================= */
 
-  function findNearbyNPC() {
+  function getEntityDistance(a, b) {
 
-    let closestNPC = null;
+    const aCenterX =
+      a.x +
+      a.width / 2;
+
+
+    const aCenterY =
+      a.y +
+      a.height / 2;
+
+
+    const bCenterX =
+      b.x +
+      b.width / 2;
+
+
+    const bCenterY =
+      b.y +
+      b.height / 2;
+
+
+    const dx =
+      aCenterX -
+      bCenterX;
+
+
+    const dy =
+      aCenterY -
+      bCenterY;
+
+
+    return Math.sqrt(
+      dx * dx +
+      dy * dy
+    );
+
+  }
+
+
+  /* =========================================================
+     BUSCAR INTERACCIÓN MÁS CERCANA
+     ========================================================= */
+
+  function findNearbyInteraction() {
+
+    let closestInteraction = null;
+
 
     let closestDistance =
       Infinity;
 
 
-    const playerCenterX =
-      player.x +
-      player.width / 2;
-
-
-    const playerCenterY =
-      player.y +
-      player.height / 2;
-
-
+    /*
+     * Buscamos entre todos los objetos.
+     */
     for (
-      const npc of npcs
+      const object of interactables
       ) {
 
-      const npcCenterX =
-        npc.x +
-        npc.width / 2;
-
-
-      const npcCenterY =
-        npc.y +
-        npc.height / 2;
-
-
-      const dx =
-        playerCenterX -
-        npcCenterX;
-
-
-      const dy =
-        playerCenterY -
-        npcCenterY;
-
-
       const distance =
-        Math.sqrt(
-          dx * dx +
-          dy * dy
+        getEntityDistance(
+          player,
+          object
         );
 
 
       if (
-        distance <
-        closestDistance
+        distance < closestDistance &&
+        distance <= interactionDistance
       ) {
 
         closestDistance =
           distance;
 
-        closestNPC =
-          npc;
+
+        closestInteraction =
+          object;
+
       }
 
     }
 
 
-    if (
-      closestNPC &&
-      closestDistance <=
-      interactionDistance
-    ) {
+    /*
+     * Buscamos también entre todos los NPCs.
+     */
+    for (
+      const npc of npcs
+      ) {
 
-      return closestNPC;
+      const distance =
+        getEntityDistance(
+          player,
+          npc
+        );
+
+
+      if (
+        distance < closestDistance &&
+        distance <= interactionDistance
+      ) {
+
+        closestDistance =
+          distance;
+
+
+        closestInteraction =
+          npc;
+
+      }
+
     }
 
 
-    return null;
+    return closestInteraction;
+
+  }
+
+
+  /* =========================================================
+     TEXTO DE INTERACCIÓN
+     ========================================================= */
+
+  function getInteractionPrompt(interaction) {
+
+    if (!interaction) {
+      return "";
+    }
+
+
+    if (
+      interaction.type === "npc"
+    ) {
+
+      return "💗 E · Hablar";
+
+    }
+
+
+    return "💗 E · Interactuar";
 
   }
 
@@ -2289,147 +2373,33 @@
       );
 
       return;
+
     }
 
 
-    const newNPC =
-      findNearbyNPC();
+    const newInteraction =
+      findNearbyInteraction();
 
 
     /*
-     * Si hay NPC cerca,
-     * tiene prioridad sobre
-     * los objetos.
+     * Si cambió el objetivo cercano,
+     * reiniciamos el texto del objeto.
      */
-
-    if (newNPC) {
-
-      nearbyNPC =
-        newNPC;
-
-      nearbyObject =
-        null;
+    if (
+      newInteraction !== nearbyInteraction
+    ) {
 
       interactionShowingText =
         false;
 
-
-      interactionText.textContent =
-        "💗 E · Hablar";
-
-
-      interactionBox.classList.add(
-        "visible"
-      );
-
-      return;
     }
 
 
-    nearbyNPC =
-      null;
+    nearbyInteraction =
+      newInteraction;
 
 
-    let closestObject = null;
-
-    let closestDistance =
-      Infinity;
-
-
-    const playerCenterX =
-      player.x +
-      player.width / 2;
-
-
-    const playerCenterY =
-      player.y +
-      player.height / 2;
-
-
-    for (
-      const object of interactables
-      ) {
-
-      const objectCenterX =
-        object.x +
-        object.width / 2;
-
-
-      const objectCenterY =
-        object.y +
-        object.height / 2;
-
-
-      const dx =
-        playerCenterX -
-        objectCenterX;
-
-
-      const dy =
-        playerCenterY -
-        objectCenterY;
-
-
-      const distance =
-        Math.sqrt(
-          dx * dx +
-          dy * dy
-        );
-
-
-      if (
-        distance <
-        closestDistance
-      ) {
-
-        closestDistance =
-          distance;
-
-        closestObject =
-          object;
-      }
-
-    }
-
-
-    if (
-      closestObject &&
-      closestDistance <=
-      interactionDistance
-    ) {
-
-      if (
-        nearbyObject !==
-        closestObject
-      ) {
-
-        interactionShowingText =
-          false;
-      }
-
-
-      nearbyObject =
-        closestObject;
-
-
-      if (
-        !interactionShowingText
-      ) {
-
-        interactionText.textContent =
-          "💗 E · Interactuar";
-      }
-
-
-      interactionBox.classList.add(
-        "visible"
-      );
-
-    } else {
-
-      nearbyObject =
-        null;
-
+    if (!nearbyInteraction) {
 
       interactionShowingText =
         false;
@@ -2439,7 +2409,40 @@
         "visible"
       );
 
+
+      return;
+
     }
+
+
+    /*
+     * Si ya mostramos el texto de un objeto,
+     * lo mantenemos visible.
+     */
+    if (
+      interactionShowingText &&
+      nearbyInteraction.type !== "npc"
+    ) {
+
+      interactionBox.classList.add(
+        "visible"
+      );
+
+
+      return;
+
+    }
+
+
+    interactionText.textContent =
+      getInteractionPrompt(
+        nearbyInteraction
+      );
+
+
+    interactionBox.classList.add(
+      "visible"
+    );
 
   }
 
@@ -2450,43 +2453,52 @@
 
   function interact() {
 
-    /*
-     * Si hay un NPC cerca,
-     * hablar tiene prioridad.
-     */
+    if (
+      !nearbyInteraction
+    ) {
 
-    if (nearbyNPC) {
+      return;
+
+    }
+
+
+    /*
+     * NPC
+     */
+    if (
+      nearbyInteraction.type === "npc"
+    ) {
 
       startDialogue(
-        nearbyNPC
+        nearbyInteraction
       );
 
+
       return;
+
     }
 
 
     /*
-     * Interacción normal
-     * con objetos.
+     * Objeto con texto
      */
+    if (
+      nearbyInteraction.text
+    ) {
 
-    if (!nearbyObject) {
+      interactionText.textContent =
+        nearbyInteraction.text;
 
-      return;
+
+      interactionShowingText =
+        true;
+
+
+      interactionBox.classList.add(
+        "visible"
+      );
+
     }
-
-
-    interactionText.textContent =
-      nearbyObject.text;
-
-
-    interactionShowingText =
-      true;
-
-
-    interactionBox.classList.add(
-      "visible"
-    );
 
   }
 
@@ -2731,3 +2743,5 @@
 
 </body>
 </html>
+
+```
